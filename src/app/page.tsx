@@ -20,10 +20,6 @@ export default function Home() {
 
   const [dictOfVars, setDictOfVars] = useState<{ [key: string]: number }>({});
 
-  // TODO: remove following line
-  setDictOfVars({});
-  // TODO: remove above line
-
   useEffect(() => {
     if (!reset) return;
 
@@ -32,6 +28,10 @@ export default function Home() {
   }, [reset]);
 
   useEffect(() => {
+    // TODO: remove following line
+    setDictOfVars({});
+    // TODO: remove above line
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
