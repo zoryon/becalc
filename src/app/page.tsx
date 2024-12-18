@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { SWATCHES } from "@/constants/colors";
 import { draw, resetCanvas, startDrawing, stopDrawing } from "@/lib/canvas-lib";
-import { GeneratedResult } from "@/types/canvas-types";
+// import { GeneratedResult } from "@/types/canvas-types";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import Swatch from "@/components/Swatch";
@@ -13,7 +13,7 @@ export default function Home() {
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const [color, setColor] = useState<string>(SWATCHES[0]);
   const [reset, setReset] = useState<boolean>(false);
-  
+
   // TODO: UNcomment following line
   // const [result, setResult] = useState<GeneratedResult>();
   // TODO: UNcomment above line
