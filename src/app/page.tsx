@@ -13,8 +13,16 @@ export default function Home() {
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const [color, setColor] = useState<string>(SWATCHES[0]);
   const [reset, setReset] = useState<boolean>(false);
-  const [result, setResult] = useState<GeneratedResult>();
+  
+  // TODO: UNcomment following line
+  // const [result, setResult] = useState<GeneratedResult>();
+  // TODO: UNcomment above line
+
   const [dictOfVars, setDictOfVars] = useState<{ [key: string]: number }>({});
+
+  // TODO: remove following line
+  setDictOfVars({});
+  // TODO: remove above line
 
   useEffect(() => {
     if (!reset) return;
