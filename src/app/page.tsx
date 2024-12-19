@@ -163,6 +163,9 @@ export default function Home() {
         onMouseOut={(e) => stopDrawing({ e, setIsDrawing })}
         onMouseUp={(e) => stopDrawing({ e, setIsDrawing })}
         onMouseMove={(e) => draw({ e, canvasRef, isDrawing, color })}
+        onTouchStart={(e) => startDrawing({ e, canvasRef, setIsDrawing})}
+        onTouchEnd={(e) => stopDrawing({ e, setIsDrawing })}
+        onTouchMove={(e) => draw({ e, canvasRef, isDrawing, color, isTouch: true })}
       />
 
       {/* latex expression */}
