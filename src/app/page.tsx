@@ -7,31 +7,26 @@ import { draw, resetCanvas, startDrawing, stopDrawing } from "@/lib/canvas-lib";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import Swatch from "@/components/Swatch";
+import { GeneratedResult } from "@/types/canvas-types";
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const [color, setColor] = useState<string>(SWATCHES[0]);
   const [reset, setReset] = useState<boolean>(false);
-
-  // TODO: UNcomment following line
-  // const [result, setResult] = useState<GeneratedResult>();
-  // TODO: UNcomment above line
-
-  const [dictOfVars, setDictOfVars] = useState<{ [key: string]: number }>({});
+  const [result, setResult] = useState<GeneratedResult>();
+  const [dictOfVars, setDictOfVars] = useState({});
 
   useEffect(() => {
     if (!reset) return;
 
     resetCanvas({ canvasRef });
+    setResult(undefined);
+    setDictOfVars({});
     setReset(false);
   }, [reset]);
 
   useEffect(() => {
-    // TODO: remove following line
-    setDictOfVars({});
-    // TODO: remove above line
-
     const canvas = canvasRef.current;
     if (!canvas) return;
 
