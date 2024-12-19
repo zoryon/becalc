@@ -5,7 +5,7 @@ import React, { useState } from "react";
 interface DraggableProps {
     children: React.ReactNode;
     defaultPosition?: { x: number; y: number };
-    onStop?: (e: MouseEvent, data: { x: number; y: number }) => void;
+    onStop?: (e: MouseEvent | TouchEvent, data: { x: number; y: number }) => void;
 }
 
 const Draggable: React.FC<DraggableProps> = ({
@@ -25,6 +25,15 @@ const Draggable: React.FC<DraggableProps> = ({
         });
     };
 
+    const handleTouchStart = (e: React.TouchEvent) => {
+        const touch = e.touches[0];
+        setIsDragging(true);
+        setOffset({
+            x: touch.clientX - position.x,
+            y: touch.clientY - position.y,
+        });
+    };
+
     const handleMouseMove = (e: React.MouseEvent) => {
         if (!isDragging) return;
 
@@ -36,9 +45,28 @@ const Draggable: React.FC<DraggableProps> = ({
         setPosition(newPosition);
     };
 
+    const handleTouchMove = (e: React.TouchEvent) => {
+        if (!isDragging) return;
+
+        const touch = e.touches[0];
+        const newPosition = {
+            x: touch.clientX - offset.x,
+            y: touch.clientY - offset.y,
+        };
+
+        setPosition(newPosition);
+    };
+
     const handleMouseUp = (e: React.MouseEvent) => {
         if (isDragging && onStop) {
             onStop(e as unknown as MouseEvent, position);
+        }
+        setIsDragging(false);
+    };
+
+    const handleTouchEnd = (e: React.TouchEvent) => {
+        if (isDragging && onStop) {
+            onStop(e as unknown as TouchEvent, position);
         }
         setIsDragging(false);
     };
@@ -52,8 +80,11 @@ const Draggable: React.FC<DraggableProps> = ({
                 cursor: "grab",
             }}
             onMouseDown={handleMouseDown}
+            onTouchStart={handleTouchStart}
             onMouseMove={handleMouseMove}
+            onTouchMove={handleTouchMove}
             onMouseUp={handleMouseUp}
+            onTouchEnd={handleTouchEnd}
             onMouseLeave={handleMouseUp}
         >
             {children}
