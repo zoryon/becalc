@@ -10,13 +10,6 @@ import axios from "axios";
 import Draggable from "@/components/Draggable";
 import { MathJax } from "better-react-mathjax";
 
-const mathJaxConfig = {
-  tex2jax: {
-    inlineMath: [["$", "$"], ["\\(", "\\)"]],
-    processEscapes: true,
-  },
-};
-
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
