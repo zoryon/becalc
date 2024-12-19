@@ -48,13 +48,13 @@ export function stopDrawing({
 
 export function draw({
     e,
-    isDrawing,
     canvasRef,
+    isDrawing,
     color,
 }: {
     e: React.MouseEvent<HTMLCanvasElement>,
-    isDrawing: boolean,
     canvasRef: React.RefObject<HTMLCanvasElement | null>,
+    isDrawing: boolean,
     color: string,
 }) {
     if (!isDrawing) return;
@@ -68,4 +68,31 @@ export function draw({
     ctx.strokeStyle = color;
     ctx.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
     ctx.stroke();
+}
+
+export function renderLatexToCanvas({
+    canvasRef,
+    expression,
+    answer,
+    latexExpression,
+    setLatexExpression,
+}: {
+    canvasRef: React.RefObject<HTMLCanvasElement | null>,
+    expression: string,
+    answer: string,
+    latexExpression: Array<String>,
+    setLatexExpression: React.Dispatch<React.SetStateAction<Array<String>>>,
+}) {
+    const latex = `\\(\\LARGE{${expression} = ${answer}}\\)`;
+    setLatexExpression([...latexExpression, latex]);
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+
 }

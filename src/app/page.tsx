@@ -2,12 +2,20 @@
 
 import { useEffect, useRef, useState } from "react";
 import { SWATCHES } from "@/constants/colors";
-import { draw, resetCanvas, startDrawing, stopDrawing } from "@/lib/canvas-lib";
-// import { GeneratedResult } from "@/types/canvas-types";
-import axios from "axios";
+import { draw, renderLatexToCanvas, resetCanvas, startDrawing, stopDrawing } from "@/lib/canvas-lib";
+import { GeneratedResult, Response } from "@/types/canvas-types";
 import { Button } from "@/components/ui/button";
 import Swatch from "@/components/Swatch";
-import { GeneratedResult } from "@/types/canvas-types";
+import axios from "axios";
+import Draggable from "@/components/Draggable";
+import { MathJax } from "better-react-mathjax";
+
+const mathJaxConfig = {
+  tex2jax: {
+    inlineMath: [["$", "$"], ["\\(", "\\)"]],
+    processEscapes: true,
+  },
+};
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -15,16 +23,36 @@ export default function Home() {
   const [color, setColor] = useState<string>(SWATCHES[0]);
   const [reset, setReset] = useState<boolean>(false);
   const [result, setResult] = useState<GeneratedResult>();
+  const [latexExpression, setLatexExpression] = useState<Array<String>>([]);
+  const [latexPosition, setLatexPosition] = useState<{ x: number, y: number }>({ x: 10, y: 200 });
   const [dictOfVars, setDictOfVars] = useState({});
 
   useEffect(() => {
     if (!reset) return;
 
     resetCanvas({ canvasRef });
+    setLatexExpression([]);
     setResult(undefined);
     setDictOfVars({});
     setReset(false);
   }, [reset]);
+
+  useEffect(() => {
+    if (latexExpression.length <= 0 || !MathJax) return;
+    // placeholder for any necessary updates when the latexExpression changes
+  }, [latexExpression]);
+
+  useEffect(() =>{
+    if (!result) return;
+
+    renderLatexToCanvas({
+      canvasRef,
+      expression: result.expression, 
+      answer: result.answer, 
+      latexExpression,
+      setLatexExpression
+    });
+  }, [result]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -52,8 +80,49 @@ export default function Home() {
       },
     });
 
-    console.log("Response: ", data);
-  }
+    console.log(data);
+
+    data.data.forEach((res: Response) => {
+      if (!res.assign) return;
+
+      setDictOfVars({
+        ...dictOfVars,
+        [res.expression]: res.result,
+      });
+    });
+
+    const ctx = canvas.getContext("2d");
+    const imageData = ctx!.getImageData(0, 0, canvas.width, canvas.height);
+    let minX = canvas.width, 
+        minY = canvas.height,
+        maxX = 0,
+        maxY = 0;
+    
+    for (let y = 0; y < canvas.height; y++) {
+      for (let x = 0; x < canvas.width; x++) {
+        if (imageData.data[(y * canvas.width + x) * 4 + 3] <= 0) continue;
+
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
+
+    const centerX = minX + maxX / 2;
+    const centerY = minY + maxY / 2;
+
+    setLatexPosition({ x: centerX, y: centerY });
+
+    data.data.forEach((res: Response) => {
+      setTimeout(() => {
+        setResult({
+          expression: res.expression,
+          answer: res.result,
+        });
+      });
+    }, 200);
+  } 
 
   return (
     <>
@@ -100,8 +169,28 @@ export default function Home() {
         onMouseDown={(e) => startDrawing({ e, canvasRef, setIsDrawing })}
         onMouseOut={(e) => stopDrawing({ e, setIsDrawing })}
         onMouseUp={(e) => stopDrawing({ e, setIsDrawing })}
-        onMouseMove={(e) => draw({ e, isDrawing, canvasRef, color })}
+        onMouseMove={(e) => draw({ e, canvasRef, isDrawing, color })}
       />
+
+      {/* latex expression */}
+      {latexExpression && latexExpression.map((latex, i) => {
+        return (
+          <Draggable 
+            key={i}
+            defaultPosition={latexPosition}
+            onStop={(e, data) => {
+              console.log(e);
+              setLatexPosition({ x: data.x, y: data.y })
+            }}
+          >
+            <div className="absolute text-foreground">
+              <MathJax>
+                {latex}
+              </MathJax>
+            </div>
+          </Draggable>
+        );
+      })}
     </>
   );
 }
