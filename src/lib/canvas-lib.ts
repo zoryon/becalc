@@ -80,8 +80,8 @@ export function renderLatexToCanvas({
     canvasRef: React.RefObject<HTMLCanvasElement | null>,
     expression: string,
     answer: string,
-    latexExpression: Array<String>,
-    setLatexExpression: React.Dispatch<React.SetStateAction<Array<String>>>,
+    latexExpression: Array<string>,
+    setLatexExpression: React.Dispatch<React.SetStateAction<Array<string>>>,
 }) {
     const latex = `\\(\\LARGE{${expression} = ${answer}}\\)`;
     setLatexExpression([...latexExpression, latex]);

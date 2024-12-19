@@ -16,7 +16,7 @@ export default function Home() {
   const [color, setColor] = useState<string>(SWATCHES[0]);
   const [reset, setReset] = useState<boolean>(false);
   const [result, setResult] = useState<GeneratedResult>();
-  const [latexExpression, setLatexExpression] = useState<Array<String>>([]);
+  const [latexExpression, setLatexExpression] = useState<Array<string>>([]);
   const [latexPosition, setLatexPosition] = useState<{ x: number, y: number }>({ x: 10, y: 200 });
   const [dictOfVars, setDictOfVars] = useState({});
 
